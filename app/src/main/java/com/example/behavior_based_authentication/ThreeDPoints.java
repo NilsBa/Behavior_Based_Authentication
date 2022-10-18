@@ -16,10 +16,5 @@ public class ThreeDPoints {
     public ArrayList<ThreeDPoint> getThreeDPoints() {
         return threeDPoints;
     }
-
-
-    public String pointToString(int index) {
-        return "ThreeDPoints: " + threeDPoints.get(0).toString();
-    }
 }
 

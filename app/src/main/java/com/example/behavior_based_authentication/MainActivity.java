@@ -38,9 +38,6 @@ public class MainActivity extends TouchActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*Intent serviceIntent = new Intent(this, MyForegroundService.class);
-        startForegroundService(serviceIntent);*/
-
         startServiceBtn = findViewById(R.id.StartButton);
         stopServiceBtn = findViewById(R.id.StopButton);
         newActivityBtn = findViewById(R.id.NewActivityButton);

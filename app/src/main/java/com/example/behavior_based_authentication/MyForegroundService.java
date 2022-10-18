@@ -74,8 +74,10 @@ public class MyForegroundService extends Service implements SensorEventListener 
 
     private final long secondToTimeStamp = 1000000000;
     private final long lastTimeMaxDelayInSeconds = 2;
+
     private HashMap<Integer, Long> lastTimeStamps = new HashMap<>();
     private HashMap<Integer, ThreeDPoints> sensorPoints = new HashMap<>();
+    private ArrayList<Touch> touchArrayList = new ArrayList<>();
 
     FusedLocationProviderClient fusedLocationClient;
     LocationRequest locationRequest;
@@ -89,10 +91,6 @@ public class MyForegroundService extends Service implements SensorEventListener 
     private Timer myTimer;
 
     private WifiManager wifiManager;
-
-    private ArrayList<Touch> touchArrayList = new ArrayList<>();
-
-    private JSONObject lastJSONObject = new JSONObject();
 
 
 
@@ -222,8 +220,9 @@ public class MyForegroundService extends Service implements SensorEventListener 
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 long now = System.currentTimeMillis();
                 Location location = locationResult.getLastLocation();
-                if (lastToastTime + toastTimeoutMs < now) {
 
+                // can be deleted, only for logging purposes
+                if (lastToastTime + toastTimeoutMs < now) {
                     Toast.makeText(getApplicationContext(),
                             "Lat: " + Double.toString(location.getLatitude()) + '\n' +
                                     "Long: " + Double.toString(location.getLongitude()), Toast.LENGTH_LONG).show();
@@ -333,15 +332,14 @@ public class MyForegroundService extends Service implements SensorEventListener 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        lastJSONObject = jsonObject;
-        sendData();
+        jsonObject = new JSONObject(prettyJson);
+        sendData(jsonObject);
     }
 
-    public void sendData() {
+    public void sendData(JSONObject jsonObject) {
+        // can be deleted, only for logging purposes
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .build();
@@ -353,7 +351,7 @@ public class MyForegroundService extends Service implements SensorEventListener 
                 .build();
 
         JsonApi jsonApi = retrofit.create(JsonApi.class);
-        JsonDataSet jsonDataSet = new JsonDataSet(lastJSONObject);
+        JsonDataSet jsonDataSet = new JsonDataSet(jsonObject);
         Call<JsonDataSet> call = jsonApi.PostData(jsonDataSet);
 
         call.enqueue(new Callback<JsonDataSet>() {
